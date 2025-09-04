@@ -55,4 +55,5 @@ jobs:
         STRIPE_PUBLISHABLE_KEY: "dummy"
         STRIPE_SECRET_KEY: "dummy"
       run: |
+        chmod +x manage.py
         python manage.py test
