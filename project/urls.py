@@ -14,17 +14,31 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-# from django.urls import path
-from django.urls import path
-from django.urls import include
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from login import views as login_views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',login_views.index),
-    path('login/',login_views.login),
-    path('register/',login_views.register),
-    path('logout/',login_views.logout),
+    
+    path('', login_views.index, name='index'),  
+    path('login/', login_views.login, name='login'),
+    path('register/', login_views.register, name='register'),
+    path('logout/', login_views.logout, name='logout'),
 
-    # Add Oath,根據ChatGPT修改
+    # Allauth URLs
     path('accounts/', include('allauth.urls')),
+    
+    # App URLs
+    path('cart/', include('cart.urls')),
+    path('products/', include('products.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

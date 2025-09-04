@@ -11,19 +11,24 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 from pathlib import Path
+## .env 屏蔽帳號密碼
+
+import os
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
+environ.Env.read_env(BASE_DIR / '.env')  # 這一行是讀取你的 .env 檔案
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-beujf-=!4&e4&^!6i5_gn8=o&4!i4vk_me+4ca-r_cb60n-4am'
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env.bool('DEBUG', default=False)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -38,14 +43,24 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'login',
-    # Add Social OAuth
+
+    ## Add accounts to login
+    'accounts', 
+    # 'accounts.apps.AccountsConfig',  # 用 AppsConfig 才能觸發 signals
+    ## Add Social OAuth
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
-    # Add Social OAuth by ChatGPT
+
+    # Add Cart - 2025-0727
+    'cart',
+    'products',
+
+    ## Add Social OAuth by ChatGPT
+
 
 ]
 
@@ -76,29 +91,35 @@ MIDDLEWARE = [
 ]
 
 
-#  Add Social Account
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': '***REMOVED***',
-            'secret': '***REMOVED***',
+            'client_id': env('GOOGLE_CLIENT_ID'),
+            'secret': env('GOOGLE_CLIENT_SECRET'),
         },
         'SCOPE': ['profile', 'email'],
         'AUTH_PARAMS': {
             'access_type': 'online',
+            'prompt': 'select_account',
         },
-        'METHOD': 'oauth2',  
+        'METHOD': 'oauth2',
         'VERIFIED_EMAIL': True,
     },
     'github': {
         'APP': {
-            'client_id': '***REMOVED***',  # <== 替換成 GitHub 的
-            'secret': '***REMOVED***',  # <== 替換成 GitHub 的
+            'client_id': env('GITHUB_CLIENT_ID'),
+            'secret': env('GITHUB_CLIENT_SECRET'),
         }
     }
 }
 
-
+SOCIALACCOUNT_AUTO_SIGNUP = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_ADAPTER = "allauth.account.adapter.DefaultAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "accounts.adapters.MySocialAccountAdapter"
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 ROOT_URLCONF = 'project.urls'
 
@@ -120,39 +141,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# Database Change to PostgreSQL
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydb',
-        'USER': 'Admin01',
-        'PASSWORD': '***REMOVED***',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
     }
 }
 
-
-
-
-
-
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -168,36 +171,54 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-##新增的下面幾行
-
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-#STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'static'),
-# ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
-
-
-
+# Media files (user uploaded files)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'allauth': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    }
+}
+
+# Stripe API Keys
+STRIPE_PUBLISHABLE_KEY = env('STRIPE_PUBLISHABLE_KEY', default=None)
+STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY', default=None)

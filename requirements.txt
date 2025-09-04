@@ -1,0 +1,5 @@
+django-allauth
+psycopg2-binary
+django-environ
+Django
+gunicorn
