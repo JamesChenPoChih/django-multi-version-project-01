@@ -4,3 +4,4 @@ django-environ
 Django
 gunicorn
 requests
+PyJWT
