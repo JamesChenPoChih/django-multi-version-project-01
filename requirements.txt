@@ -8,3 +8,4 @@ PyJWT
 cryptography
 stripe
 dj-database-url
+whitenoise
