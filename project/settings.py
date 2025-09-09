@@ -212,16 +212,25 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 # STATIC_URL = '/static/'
 # STATIC_ROOT = BASE_DIR / 'staticfiles'
+# STATICFILES_DIRS = [
+#     BASE_DIR / 'static',
+# ]
+
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = "/static/"
+
+# 本地開發的靜態檔案資料夾（去掉多餘的 "project"）
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / "static",
 ]
 
+# collectstatic 收集後會放到這裡（部署時用）
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-
-## 2025-0909 測試 Render 
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+# Whitenoise 推薦設定（Render）
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+
 
 # Media files (user uploaded files)
 MEDIA_URL = '/media/'
