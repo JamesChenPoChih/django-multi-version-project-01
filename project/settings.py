@@ -31,7 +31,14 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 
 
-ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['*']
+
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    os.environ.get("RENDER_EXTERNAL_HOSTNAME"),  # Render 自動提供
+    "https://django-multi-version-project-01.onrender.com",                # 直接寫死也可以
+]
 
 
 # Application definition
@@ -147,11 +154,21 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 
 # 2025-0907 Render網路版本
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=os.environ.get('DATABASE_URL')
+#     )
+# }
+
+
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL')
+    "default": dj_database_url.config(
+        default=os.environ.get("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True
     )
 }
+
 
 # Local 地端版本
 # DATABASES = {
