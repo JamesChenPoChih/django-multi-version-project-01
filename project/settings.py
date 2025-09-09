@@ -216,10 +216,12 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
+
+
 ## 2025-0909 測試 Render 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Media files (user uploaded files)
 MEDIA_URL = '/media/'
