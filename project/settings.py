@@ -37,13 +37,18 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     os.environ.get("RENDER_EXTERNAL_HOSTNAME"),  # Render 自動提供
-    "https://django-multi-version-project-01.onrender.com",                # 直接寫死也可以
+    "django-multi-version-project-01.onrender.com",                # 直接寫死也可以
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://django-multi-version-project-01.onrender.com",
 ]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'whitenoise.runserver_nostatic',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
