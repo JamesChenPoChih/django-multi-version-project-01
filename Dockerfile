@@ -16,7 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/
 
 # Collect static files
-RUN SECRET_KEY=dummy_build_key python manage.py collectstatic --no-input
+# RUN SECRET_KEY=dummy_build_key python manage.py collectstatic --no-input
 
 # Expose port 8000
 EXPOSE 8000
