@@ -1,0 +1,20 @@
+databases:
+  - name: login_record
+    databaseName: login_record
+    user: login_record_user
+
+services:
+  - type: web
+    name: login-record
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn project.wsgi:application"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: login_record
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4

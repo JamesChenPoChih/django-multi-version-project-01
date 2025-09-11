@@ -1,0 +1,11 @@
+django-allauth
+psycopg2-binary
+django-environ
+Django
+gunicorn
+requests
+PyJWT
+cryptography
+stripe
+dj-database-url
+whitenoise
